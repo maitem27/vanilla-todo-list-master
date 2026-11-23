@@ -1,20 +1,22 @@
 const storage = 'todo';
 
-// lance le reste seulement quand le DOM est totallement chargé (pas obligatoire si  le script est en fin de body mais je le met par précaution)
+// lance le reste seulement quand le DOM est totalement chargé (pas obligatoire si  le script est en fin de body mais je le met par précaution)
 document.addEventListener('DOMContentLoaded', () => {
 	const input = document.getElementById('new-todo');
 	const addButton = document.getElementById('add-todo');
 	const list = document.getElementById('todo-list');
+
 	function valid_todo(todo) {
 		return todo !== null && typeof todo.text === 'string' && typeof todo.done === 'boolean';
 	}
 	function load_todo() {
-		try {const saved = JSON.parse(localStorage.getItem(storage));
-				if (Array.isArray(saved)) {
+		try {
+			const saved = JSON.parse(localStorage.getItem(storage));
+			if (Array.isArray(saved)) {
 					return saved.filter(valid_todo);
-				}
+			}
 		} catch {
-			// empeche l'erreur et permet le return [] j'aurais pu mettre un return[] au lieu du commentaire
+			// empeche l'erreur et permet le return [] j'aurais pu mettre un return[] au lieu du commentaire mais le cela serait juste le dupliquer parce que le return du bas reste (pour les données illisibles, le JSON pas valide)
 		}
 		return [];
 	}
@@ -32,6 +34,26 @@ document.addEventListener('DOMContentLoaded', () => {
 		button.addEventListener('click', on_click);
 		return button;
 	}
+
+	function display_todo() {
+		list.textContent = '';
+		todos.forEach((todo, index) => {
+			list.append(create_todo_item(todo, index));
+		});
+	}
+
+	function toggle_todo(index) {
+		todos[index].done = !todos[index].done;
+		save_todo();
+		display_todo();
+	}
+
+	function delete_todo(index) {
+		todos.splice(index, 1);
+		save_todo();
+		display_todo();
+	}
+
 
 	function create_todo_item(todo, index) {
 		const item = document.createElement('li');
@@ -55,13 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		return item;
 	}
 
-	function display_todo() {
-		list.textContent = '';
-		todos.forEach((todo, index) => {
-			list.append(create_todo_item(todo, index));
-		});
-	}
-
 	function add_todo() {
 		const text = input.value.trim();
 		if (text === '') {
@@ -70,18 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		todos.push({ text: text, done: false });
 		input.value = '';
-		save_todo();
-		display_todo();
-	}
-
-	function toggle_todo(index) {
-		todos[index].done = !todos[index].done;
-		save_todo();
-		display_todo();
-	}
-
-	function delete_todo(index) {
-		todos.splice(index, 1);
 		save_todo();
 		display_todo();
 	}
