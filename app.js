@@ -1,15 +1,13 @@
 const storage = 'todo';
 
-// lance le reste seulement quand le DOM est totallement chargé (pas obligatoire si  le script est en fin de body)
+// lance le reste seulement quand le DOM est totallement chargé (pas obligatoire si  le script est en fin de body mais je le met par précaution)
 document.addEventListener('DOMContentLoaded', () => {
 	const input = document.getElementById('new-todo');
 	const addButton = document.getElementById('add-todo');
 	const list = document.getElementById('todo-list');
-
 	function valid_todo(todo) {
 		return todo !== null && typeof todo.text === 'string' && typeof todo.done === 'boolean';
 	}
-
 	function load_todo() {
 		try {const saved = JSON.parse(localStorage.getItem(storage));
 				if (Array.isArray(saved)) {
